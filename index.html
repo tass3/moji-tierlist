@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tier表メーカー - テキスト入力版</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tier表メーカー</h1>
+            <p class="subtitle">テキストを入力し、生成されたテキストをドラッグしてTierに配置</p>
+        </header>
+
+        <main class="main">
+            <section class="preview-panel">
+                <div class="panel-header">
+                    <h2>プレビュー (S〜D 固定)</h2>
+                </div>
+                <div id="tier-board" class="tier-board">
+                    <!-- Tier表がここに表示される -->
+                </div>
+            </section>
+
+            <section class="pool-panel">
+                <div class="panel-header no-title">
+                    <h2 aria-hidden="true"></h2>
+                    <button class="btn btn-secondary" id="clear-pool-btn">プールを空にする</button>
+                </div>
+                <div id="token-pool" class="token-pool" aria-label="未配置テキストアイテムのプール">
+                    <!-- 未配置のテキストアイテムがここに表示される -->
+                </div>
+            </section>
+
+            <section class="input-panel">
+                <div class="panel-header">
+                    <h2>テキスト入力</h2>
+                    <button class="btn btn-primary" id="generate-btn">アイテム生成</button>
+                </div>
+                <div class="input-body">
+                    <textarea id="token-textarea" class="token-textarea" placeholder="1行1アイテムで入力&#10;例:&#10;りんご&#10;みかん&#10;ぶどう"></textarea>
+                    <p class="hint">「アイテム生成」でプールにカードを作成し、ドラッグ&ドロップでTierへ配置します。</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
