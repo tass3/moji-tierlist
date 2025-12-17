@@ -1,10 +1,10 @@
 // 固定Tierデータ
 const tiers = [
-    { id: 'tier-s', title: 'S', color: '#ff4d4f', textColor: '#ffffff', items: [] },
-    { id: 'tier-a', title: 'A', color: '#ff9800', textColor: '#ffffff', items: [] },
-    { id: 'tier-b', title: 'B', color: '#ffc107', textColor: '#000000', items: [] },
-    { id: 'tier-c', title: 'C', color: '#4caf50', textColor: '#ffffff', items: [] },
-    { id: 'tier-d', title: 'D', color: '#2196f3', textColor: '#ffffff', items: [] },
+    { id: 'tier-s', title: 'S', color: '#ff7875', textColor: '#000000', items: [] }, // 赤（少し濃いめ）
+    { id: 'tier-a', title: 'A', color: '#ffc069', textColor: '#000000', items: [] }, // オレンジ（少し濃いめ）
+    { id: 'tier-b', title: 'B', color: '#fff566', textColor: '#000000', items: [] }, // 黄（少し濃いめ）
+    { id: 'tier-c', title: 'C', color: '#95de64', textColor: '#000000', items: [] }, // 緑（少し濃いめ）
+    { id: 'tier-d', title: 'D', color: '#69c0ff', textColor: '#000000', items: [] }, // 青（少し濃いめ）
 ];
 
 // 未配置トークンプール
@@ -29,13 +29,25 @@ function renderBoard() {
         const row = document.createElement('div');
         row.className = 'tier-row';
         row.dataset.tierIndex = tierIndex;
-        row.style.borderLeft = `8px solid ${tier.color}`;
+
 
         const label = document.createElement('div');
         label.className = 'tier-label';
         label.textContent = tier.title;
         label.style.backgroundColor = tier.color;
         label.style.color = tier.textColor;
+        label.contentEditable = 'true';
+
+        label.addEventListener('blur', () => {
+            tier.title = label.textContent;
+        });
+
+        label.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                label.blur();
+            }
+        });
 
         const itemsContainer = document.createElement('div');
         itemsContainer.className = 'tier-items';
