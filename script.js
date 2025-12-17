@@ -13,11 +13,29 @@ let tokenPool = [];
 // ドラッグ中のデータ
 let dragItem = null;
 
+// モーダル関連の変数
+const modal = document.getElementById('settings-modal');
+
 function init() {
     document.getElementById('generate-btn').addEventListener('click', generateTokens);
     document.getElementById('clear-pool-btn').addEventListener('click', clearPool);
+
+    // モーダル関連イベント
+    document.getElementById('close-modal').addEventListener('click', closeSettings);
+
     renderBoard();
     renderPool();
+}
+
+// 設定モーダルを開く
+function openSettings(index) {
+    // 将来的にindexを使ってどのTierか特定する
+    modal.classList.remove('hidden');
+}
+
+// 設定モーダルを閉じる
+function closeSettings() {
+    modal.classList.add('hidden');
 }
 
 // Tier表を描画
@@ -86,6 +104,7 @@ function renderBoard() {
                 <use href="#icon-settings"></use>
             </svg>
         `;
+        settingsBtn.addEventListener('click', () => openSettings(tierIndex));
 
         row.appendChild(label);
         row.appendChild(itemsContainer);
