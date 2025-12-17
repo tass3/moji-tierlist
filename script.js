@@ -78,8 +78,18 @@ function renderBoard() {
             handleDropToTier(tierIndex, null);
         });
 
+        // 設定ボタン（歯車）の追加
+        const settingsBtn = document.createElement('button');
+        settingsBtn.className = 'tier-settings-btn';
+        settingsBtn.innerHTML = `
+            <svg>
+                <use href="#icon-settings"></use>
+            </svg>
+        `;
+
         row.appendChild(label);
         row.appendChild(itemsContainer);
+        row.appendChild(settingsBtn);
         container.appendChild(row);
     });
 }

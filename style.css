@@ -272,3 +272,33 @@ header h1 {
         width: 100%;
     }
 }
+
+/* 設定ボタン（歯車） */
+.tier-settings-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    opacity: 1;
+    /* 常時表示 */
+    transition: all 0.2s;
+    margin-left: 8px;
+    border-radius: 4px;
+}
+
+
+
+.tier-settings-btn:hover {
+    background: #2d313a;
+    color: #e5e7eb;
+}
+
+.tier-settings-btn svg {
+    width: 20px;
+    height: 20px;
+}
