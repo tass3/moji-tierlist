@@ -12,6 +12,7 @@ let tokenPool = [];
 
 // ドラッグ中のデータ
 let dragItem = null;
+let dragGhost = null; // タッチ操作用のゴースト要素
 
 // モーダル関連の変数
 const modal = document.getElementById('settings-modal');
@@ -236,7 +237,103 @@ function createDraggableItem(item, source, tierIndex, itemIndex) {
         handleDropToTier(targetTierIndex, targetIndex);
     });
 
+
+
+    // タッチデバイス対応
+    setupTouchEvents(el, item, source, tierIndex, itemIndex);
+
     return el;
+}
+
+// タッチイベントの設定
+function setupTouchEvents(el, item, source, tierIndex, itemIndex) {
+    el.addEventListener('touchstart', (e) => {
+        // マルチタッチ回避
+        if (e.touches.length > 1) return;
+
+        const touch = e.touches[0];
+
+        // ドラッグ情報のセット
+        dragItem = {
+            id: item.id,
+            source,
+            tierIndex,
+            itemIndex,
+        };
+
+        // ゴースト要素の作成
+        dragGhost = el.cloneNode(true);
+        dragGhost.style.position = 'fixed';
+        dragGhost.style.pointerEvents = 'none'; // 下にある要素を判定できるように
+        dragGhost.style.zIndex = '1000';
+        dragGhost.style.opacity = '0.8';
+        dragGhost.style.width = `${el.offsetWidth}px`;
+        dragGhost.style.left = `${touch.clientX - el.offsetWidth / 2}px`;
+        dragGhost.style.top = `${touch.clientY - el.offsetHeight / 2}px`;
+        dragGhost.style.boxShadow = '0 10px 20px rgba(0,0,0,0.5)';
+
+        document.body.appendChild(dragGhost);
+        el.classList.add('dragging');
+    }, { passive: false });
+
+    el.addEventListener('touchmove', (e) => {
+        if (!dragGhost) return;
+        e.preventDefault(); // スクロール防止
+
+        const touch = e.touches[0];
+        dragGhost.style.left = `${touch.clientX - dragGhost.offsetWidth / 2}px`;
+        dragGhost.style.top = `${touch.clientY - dragGhost.offsetHeight / 2}px`;
+    }, { passive: false });
+
+    el.addEventListener('touchend', (e) => {
+        if (!dragGhost) return;
+
+        const touch = e.changedTouches[0];
+        // ドロップ位置にある要素を取得
+        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        handleTouchDrop(targetEl);
+
+        // クリーンアップ
+        document.body.removeChild(dragGhost);
+        dragGhost = null;
+        el.classList.remove('dragging');
+        dragItem = null;
+    });
+}
+
+// タッチ操作でのドロップ処理
+function handleTouchDrop(targetEl) {
+    if (!targetEl) return;
+
+    // トークンプールへのドロップ判定
+    if (targetEl.closest('.token-pool')) {
+        handleDropToPool();
+        return;
+    }
+
+    // Tier内のアイテムへのドロップ（並び替え）判定
+    const targetItem = targetEl.closest('.tier-item');
+    if (targetItem) {
+        // 自分自身へのドロップは無視
+        if (targetItem.dataset.id === dragItem.id) return;
+
+        const targetTierIndex = parseInt(targetItem.dataset.tierIndex);
+        const targetIndex = parseInt(targetItem.dataset.itemIndex);
+        handleDropToTier(targetTierIndex, targetIndex);
+        return;
+    }
+
+    // Tier行（空きスペース）へのドロップ判定
+    const targetRow = targetEl.closest('.tier-items') || targetEl.closest('.tier-row');
+    if (targetRow) {
+        // .tier-itemsを探す
+        const itemsContainer = targetRow.classList.contains('tier-items') ? targetRow : targetRow.querySelector('.tier-items');
+        if (itemsContainer) {
+            const tierIndex = parseInt(itemsContainer.dataset.tierIndex);
+            handleDropToTier(tierIndex, null); // 末尾に追加
+        }
+    }
 }
 
 // テキストからトークン生成

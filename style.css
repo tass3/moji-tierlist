@@ -282,18 +282,56 @@ header h1 {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 0;
+    }
+
+    header {
+        padding: 20px 10px;
+    }
+
     header h1 {
-        font-size: 1.8em;
+        font-size: 1.5em;
     }
 
     .panel-header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 10px;
+        padding: 10px;
+    }
+
+    .tier-label {
+        min-width: 60px;
+        padding: 0 5px;
+        font-size: 0.9em;
+    }
+
+    .tier-items {
+        padding: 8px;
+        gap: 6px;
+        min-height: 60px;
+    }
+
+    .tier-item {
+        padding: 8px 12px;
+        font-size: 0.85em;
     }
 
     .btn {
         width: 100%;
+        padding: 12px;
+        /* タップしやすいように大きく */
+    }
+
+    .tier-settings-btn {
+        width: 40px;
+        /* タップしやすいように大きく */
+        height: 40px;
     }
 }
 
