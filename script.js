@@ -25,6 +25,9 @@ function init() {
     // モーダル関連イベント
     document.getElementById('close-modal').addEventListener('click', closeSettings);
     colorPicker.addEventListener('input', changeTierColor);
+    document.getElementById('add-tier-above-btn').addEventListener('click', () => addTier('above'));
+    document.getElementById('add-tier-btn').addEventListener('click', () => addTier('below'));
+    document.getElementById('delete-tier-btn').addEventListener('click', deleteTier);
 
     renderBoard();
     renderPool();
@@ -50,6 +53,41 @@ function changeTierColor(e) {
     const newColor = e.target.value;
     tiers[currentSettingTierIndex].color = newColor;
     renderBoard();
+}
+
+// Tierの追加
+function addTier(position) {
+    if (currentSettingTierIndex === null) return;
+
+    const newTier = {
+        id: `tier-${Date.now()}`,
+        title: 'New',
+        color: '#ffffff', // 白
+        textColor: '#000000', // 黒
+        items: []
+    };
+
+    // 挿入位置の決定
+    const insertIndex = position === 'above' ? currentSettingTierIndex : currentSettingTierIndex + 1;
+
+    // 指定位置に挿入
+    tiers.splice(insertIndex, 0, newTier);
+    closeSettings();
+    renderBoard();
+}
+
+// Tierの削除
+function deleteTier() {
+    if (currentSettingTierIndex === null) return;
+
+    // 削除するTierのアイテムをプールに戻す
+    const deletedItems = tiers[currentSettingTierIndex].items;
+    tokenPool = tokenPool.concat(deletedItems);
+
+    tiers.splice(currentSettingTierIndex, 1);
+    closeSettings();
+    renderBoard();
+    renderPool();
 }
 
 // Tier表を描画
