@@ -15,6 +15,8 @@ let dragItem = null;
 
 // モーダル関連の変数
 const modal = document.getElementById('settings-modal');
+const colorPicker = document.getElementById('tier-color-picker');
+let currentSettingTierIndex = null;
 
 function init() {
     document.getElementById('generate-btn').addEventListener('click', generateTokens);
@@ -22,6 +24,7 @@ function init() {
 
     // モーダル関連イベント
     document.getElementById('close-modal').addEventListener('click', closeSettings);
+    colorPicker.addEventListener('input', changeTierColor);
 
     renderBoard();
     renderPool();
@@ -29,13 +32,24 @@ function init() {
 
 // 設定モーダルを開く
 function openSettings(index) {
-    // 将来的にindexを使ってどのTierか特定する
+    currentSettingTierIndex = index;
+    const tier = tiers[index];
+    colorPicker.value = tier.color;
     modal.classList.remove('hidden');
 }
 
 // 設定モーダルを閉じる
 function closeSettings() {
     modal.classList.add('hidden');
+    currentSettingTierIndex = null;
+}
+
+// 色変更処理
+function changeTierColor(e) {
+    if (currentSettingTierIndex === null) return;
+    const newColor = e.target.value;
+    tiers[currentSettingTierIndex].color = newColor;
+    renderBoard();
 }
 
 // Tier表を描画
