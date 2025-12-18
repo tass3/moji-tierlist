@@ -174,7 +174,7 @@ function renderPool() {
     if (tokenPool.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'empty-tier';
-        empty.textContent = '未配置トークンはありません';
+        empty.textContent = '未配置カードはありません';
         pool.appendChild(empty);
         return;
     }
