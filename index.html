@@ -12,14 +12,12 @@
     <div class="container">
         <header>
             <h1>Tier表メーカー</h1>
-            <p class="subtitle">テキストを入力し、生成されたテキストをドラッグしてTierに配置</p>
+            <p class="subtitle">テキストを入力し、生成されたカードをドラッグしてTierに配置</p>
         </header>
 
         <main class="main">
             <section class="preview-panel">
-                <div class="panel-header">
-                    <h2>プレビュー (S〜D 固定)</h2>
-                </div>
+                <input type="text" class="tier-title-input" placeholder="タイトルを入力">
                 <div id="tier-board" class="tier-board">
                     <!-- Tier表がここに表示される -->
                 </div>
@@ -43,7 +41,7 @@
                 <div class="input-body">
                     <textarea id="token-textarea" class="token-textarea"
                         placeholder="1行1アイテムで入力&#10;例:&#10;りんご&#10;みかん&#10;ぶどう"></textarea>
-                    <p class="hint">「アイテム生成」でプールにカードを作成し、ドラッグ&ドロップでTierへ配置します。</p>
+                    <p class="hint">「アイテム生成」でプールにカードを作成し、ドラッグ&ドロップでTier表へ配置します。</p>
                 </div>
             </section>
         </main>
