@@ -29,9 +29,47 @@ function init() {
     document.getElementById('add-tier-above-btn').addEventListener('click', () => addTier('above'));
     document.getElementById('add-tier-btn').addEventListener('click', () => addTier('below'));
     document.getElementById('delete-tier-btn').addEventListener('click', deleteTier);
+    document.getElementById('save-image-btn').addEventListener('click', saveImage);
 
     renderBoard();
     renderPool();
+}
+
+// 画像保存機能
+function saveImage() {
+    const element = document.querySelector('.preview-panel');
+    const titleInput = document.querySelector('.tier-title-input');
+
+    // タイトルが空の場合はデフォルト名
+    const fileName = (titleInput.value.trim() || 'tier-list') + '.png';
+
+    html2canvas(element, {
+        backgroundColor: '#282828', // 背景色を指定
+        scale: 2, // 高解像度で出力
+        logging: false,
+        useCORS: true,
+        // クローン時に input を div に差し替えることで見切れを防ぐ
+        onclone: (clonedDoc) => {
+            const clonedInput = clonedDoc.querySelector('.tier-title-input');
+            const replacement = clonedDoc.createElement('div');
+            replacement.innerText = clonedInput.value;
+
+            // 元の入力欄のスタイルをコピー
+            const styles = window.getComputedStyle(titleInput);
+            for (let prop of styles) {
+                replacement.style[prop] = styles[prop];
+            }
+            replacement.style.display = 'block';
+            replacement.style.whiteSpace = 'pre-wrap';
+
+            clonedInput.parentNode.replaceChild(replacement, clonedInput);
+        }
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
 }
 
 // 設定モーダルを開く

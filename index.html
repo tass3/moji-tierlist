@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tier表メーカー - テキスト入力版</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 
 <body>
@@ -26,7 +27,10 @@
             <section class="pool-panel">
                 <div class="panel-header no-title">
                     <h2 aria-hidden="true"></h2>
-                    <button class="btn btn-secondary" id="clear-pool-btn">プールを空にする</button>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" id="save-image-btn" data-html2canvas-ignore>画像を保存</button>
+                        <button class="btn btn-secondary" id="clear-pool-btn">プールを空にする</button>
+                    </div>
                 </div>
                 <div id="token-pool" class="token-pool" aria-label="未配置テキストアイテムのプール">
                     <!-- 未配置のテキストアイテムがここに表示される -->
