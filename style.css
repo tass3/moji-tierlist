@@ -17,9 +17,7 @@ body {
     margin: 0 auto;
     background: #282828;
     border-radius: 0;
-
     overflow: hidden;
-
 }
 
 header {
@@ -27,7 +25,6 @@ header {
     color: #f5f5f5;
     padding: 28px;
     text-align: center;
-
 }
 
 header h1 {
@@ -53,7 +50,6 @@ header h1 {
     align-items: center;
     padding: 14px 18px;
     background: #282828;
-
 }
 
 .panel-header h2 {
@@ -63,12 +59,52 @@ header h1 {
 
 .preview-panel {
     background: #282828;
+    padding-top: 30px;
+    padding-bottom: 20px;
+}
 
+.tier-title-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #e5e7eb;
+    text-align: center;
+    margin-bottom: 0;
+    padding: 10px;
+    font-family: inherit;
+    line-height: 1.3;
+    /* 高さ確保のため行間調整 */
+    padding-top: 20px;
+    padding-bottom: 10px;
+    /* 上部余裕を増やす */
+}
+
+.tier-title-input::placeholder {
+    color: #4b5563;
+    opacity: 0.5;
 }
 
 .pool-panel {
     background: #282828;
+    min-height: 200px;
+}
 
+.header-actions {
+    display: flex;
+    gap: 20px;
+    /* ボタン間隔を広めに */
+}
+
+.tier-title-input::placeholder {
+    color: #4b5563;
+    opacity: 0.5;
+}
+
+.pool-panel {
+    background: #282828;
 }
 
 .tier-board {
@@ -77,18 +113,15 @@ header h1 {
 
 .tier-row {
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 2px;
     min-height: 70px;
     border-radius: 0;
     overflow: hidden;
-
     background: #191919;
-
 }
 
 .tier-row:nth-child(even) {
     background: #191919;
-
 }
 
 .tier-label {
@@ -96,13 +129,16 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    text-align: center;
+    font-weight: 500;
     font-size: 1.1em;
     color: white;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     padding: 0 18px;
-    cursor: move;
-    user-select: none;
+    cursor: text;
+}
+
+.tier-label:focus {
+    outline: none;
 }
 
 .tier-items {
@@ -117,10 +153,10 @@ header h1 {
 }
 
 .tier-item {
-    background: #1a1d26;
+    background: #262a35;
     padding: 10px 16px;
     border-radius: 0;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+    box-shadow: none;
     cursor: move;
     user-select: none;
     font-size: 0.95em;
@@ -131,7 +167,7 @@ header h1 {
 
 .tier-item:hover {
     transform: scale(1.03);
-    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.65);
+    box-shadow: none;
     border-color: #323743;
 }
 
@@ -157,7 +193,6 @@ header h1 {
 
 .input-panel {
     background: #282828;
-
 }
 
 .input-body {
@@ -168,7 +203,6 @@ header h1 {
     width: 100%;
     min-height: 120px;
     padding: 12px;
-
     border-radius: 0;
     font-size: 1em;
     font-family: inherit;
@@ -180,7 +214,6 @@ header h1 {
 
 .token-textarea:focus {
     outline: none;
-    border-color: #2d3036;
     box-shadow: 0 0 0 3px rgba(45, 48, 54, 0.4);
 }
 
@@ -197,7 +230,6 @@ header h1 {
     padding: 16px;
     background: #191919;
     min-height: 80px;
-
 }
 
 .token-pool.empty {
@@ -272,17 +304,176 @@ header h1 {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 0;
+    }
+
+    header {
+        padding: 20px 10px;
+    }
+
     header h1 {
-        font-size: 1.8em;
+        font-size: 1.5em;
     }
 
     .panel-header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
         gap: 10px;
+        padding: 10px;
+    }
+
+    .tier-label {
+        min-width: 60px;
+        padding: 0 5px;
+        font-size: 0.9em;
+    }
+
+    .tier-items {
+        padding: 8px;
+        gap: 6px;
+        min-height: 60px;
+    }
+
+    .tier-item {
+        padding: 8px 12px;
+        font-size: 0.85em;
     }
 
     .btn {
         width: 100%;
+        padding: 12px;
+        /* タップしやすいように大きく */
     }
+
+    .tier-settings-btn {
+        width: 40px;
+        /* タップしやすいように大きく */
+        height: 40px;
+    }
+}
+
+
+
+/* モーダル */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.2s;
+}
+
+.modal.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: #1f2229;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    border: 1px solid #2e323a;
+}
+
+.modal-header {
+    padding: 16px 20px;
+    background: #191c23;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #2e323a;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #e5e7eb;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 2.5em;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0 8px;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    color: #e5e7eb;
+}
+
+.modal-body {
+    padding: 20px;
+    color: #d1d5db;
+    text-align: center;
+}
+
+
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.modal-actions .btn {
+    flex: 1;
+}
+
+.btn-danger {
+    background: #7f1d1d;
+    color: #fecaca;
+}
+
+.btn-danger:hover {
+    background: #991b1b;
+}
+
+/* 設定ボタン（歯車） */
+.tier-settings-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    opacity: 1;
+    /* 常時表示 */
+    transition: all 0.2s;
+    margin-left: 8px;
+    border-radius: 4px;
+}
+
+
+
+.tier-settings-btn:hover {
+    background: #2d313a;
+    color: #e5e7eb;
+}
+
+.tier-settings-btn svg {
+    width: 20px;
+    height: 20px;
 }

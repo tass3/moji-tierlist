@@ -6,20 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tier表メーカー - テキスト入力版</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 
 <body>
     <div class="container">
         <header>
             <h1>Tier表メーカー</h1>
-            <p class="subtitle">テキストを入力し、生成されたテキストをドラッグしてTierに配置</p>
+            <p class="subtitle">テキストを入力し、生成されたカードをドラッグしてTierに配置</p>
         </header>
 
         <main class="main">
             <section class="preview-panel">
-                <div class="panel-header">
-                    <h2>プレビュー (S〜D 固定)</h2>
-                </div>
+                <input type="text" class="tier-title-input" placeholder="タイトルを入力">
                 <div id="tier-board" class="tier-board">
                     <!-- Tier表がここに表示される -->
                 </div>
@@ -28,7 +27,10 @@
             <section class="pool-panel">
                 <div class="panel-header no-title">
                     <h2 aria-hidden="true"></h2>
-                    <button class="btn btn-secondary" id="clear-pool-btn">プールを空にする</button>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" id="save-image-btn" data-html2canvas-ignore>画像を保存</button>
+                        <button class="btn btn-secondary" id="clear-pool-btn">プールを空にする</button>
+                    </div>
                 </div>
                 <div id="token-pool" class="token-pool" aria-label="未配置テキストアイテムのプール">
                     <!-- 未配置のテキストアイテムがここに表示される -->
@@ -43,11 +45,40 @@
                 <div class="input-body">
                     <textarea id="token-textarea" class="token-textarea"
                         placeholder="1行1アイテムで入力&#10;例:&#10;りんご&#10;みかん&#10;ぶどう"></textarea>
-                    <p class="hint">「アイテム生成」でプールにカードを作成し、ドラッグ&ドロップでTierへ配置します。</p>
+                    <p class="hint">「アイテム生成」でプールにカードを作成し、ドラッグ&ドロップでTier表へ配置します。</p>
                 </div>
             </section>
         </main>
     </div>
+
+    <!-- 設定モーダル -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tier設定</h3>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label>背景色</label>
+                    <input type="color" id="tier-color-picker">
+                </div>
+                <div class="modal-actions">
+                    <button id="add-tier-above-btn" class="btn btn-primary">上に行を追加</button>
+                    <button id="add-tier-btn" class="btn btn-primary">下に行を追加</button>
+                    <button id="delete-tier-btn" class="btn btn-danger">この行を削除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SVG定義 -->
+    <svg style="display: none;">
+        <symbol id="icon-settings" viewBox="0 0 24 24">
+            <path fill="currentColor"
+                d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+        </symbol>
+    </svg>
 
     <script src="script.js"></script>
 </body>

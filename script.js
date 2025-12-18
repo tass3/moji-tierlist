@@ -1,10 +1,10 @@
 // 固定Tierデータ
 const tiers = [
-    { id: 'tier-s', title: 'S', color: '#ff4d4f', textColor: '#ffffff', items: [] },
-    { id: 'tier-a', title: 'A', color: '#ff9800', textColor: '#ffffff', items: [] },
-    { id: 'tier-b', title: 'B', color: '#ffc107', textColor: '#000000', items: [] },
-    { id: 'tier-c', title: 'C', color: '#4caf50', textColor: '#ffffff', items: [] },
-    { id: 'tier-d', title: 'D', color: '#2196f3', textColor: '#ffffff', items: [] },
+    { id: 'tier-s', title: 'S', color: '#ff7875', textColor: '#000000', items: [] }, // 赤（少し濃いめ）
+    { id: 'tier-a', title: 'A', color: '#ffc069', textColor: '#000000', items: [] }, // オレンジ（少し濃いめ）
+    { id: 'tier-b', title: 'B', color: '#fff566', textColor: '#000000', items: [] }, // 黄（少し濃いめ）
+    { id: 'tier-c', title: 'C', color: '#95de64', textColor: '#000000', items: [] }, // 緑（少し濃いめ）
+    { id: 'tier-d', title: 'D', color: '#69c0ff', textColor: '#000000', items: [] }, // 青（少し濃いめ）
 ];
 
 // 未配置トークンプール
@@ -12,10 +12,119 @@ let tokenPool = [];
 
 // ドラッグ中のデータ
 let dragItem = null;
+let dragGhost = null; // タッチ操作用のゴースト要素
+
+// モーダル関連の変数
+const modal = document.getElementById('settings-modal');
+const colorPicker = document.getElementById('tier-color-picker');
+let currentSettingTierIndex = null;
 
 function init() {
     document.getElementById('generate-btn').addEventListener('click', generateTokens);
     document.getElementById('clear-pool-btn').addEventListener('click', clearPool);
+
+    // モーダル関連イベント
+    document.getElementById('close-modal').addEventListener('click', closeSettings);
+    colorPicker.addEventListener('input', changeTierColor);
+    document.getElementById('add-tier-above-btn').addEventListener('click', () => addTier('above'));
+    document.getElementById('add-tier-btn').addEventListener('click', () => addTier('below'));
+    document.getElementById('delete-tier-btn').addEventListener('click', deleteTier);
+    document.getElementById('save-image-btn').addEventListener('click', saveImage);
+
+    renderBoard();
+    renderPool();
+}
+
+// 画像保存機能
+function saveImage() {
+    const element = document.querySelector('.preview-panel');
+    const titleInput = document.querySelector('.tier-title-input');
+
+    // タイトルが空の場合はデフォルト名
+    const fileName = (titleInput.value.trim() || 'tier-list') + '.png';
+
+    html2canvas(element, {
+        backgroundColor: '#282828', // 背景色を指定
+        scale: 2, // 高解像度で出力
+        logging: false,
+        useCORS: true,
+        // クローン時に input を div に差し替えることで見切れを防ぐ
+        onclone: (clonedDoc) => {
+            const clonedInput = clonedDoc.querySelector('.tier-title-input');
+            const replacement = clonedDoc.createElement('div');
+            replacement.innerText = clonedInput.value;
+
+            // 元の入力欄のスタイルをコピー
+            const styles = window.getComputedStyle(titleInput);
+            for (let prop of styles) {
+                replacement.style[prop] = styles[prop];
+            }
+            replacement.style.display = 'block';
+            replacement.style.whiteSpace = 'pre-wrap';
+
+            clonedInput.parentNode.replaceChild(replacement, clonedInput);
+        }
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+}
+
+// 設定モーダルを開く
+function openSettings(index) {
+    currentSettingTierIndex = index;
+    const tier = tiers[index];
+    colorPicker.value = tier.color;
+    modal.classList.remove('hidden');
+}
+
+// 設定モーダルを閉じる
+function closeSettings() {
+    modal.classList.add('hidden');
+    currentSettingTierIndex = null;
+}
+
+// 色変更処理
+function changeTierColor(e) {
+    if (currentSettingTierIndex === null) return;
+    const newColor = e.target.value;
+    tiers[currentSettingTierIndex].color = newColor;
+    renderBoard();
+}
+
+// Tierの追加
+function addTier(position) {
+    if (currentSettingTierIndex === null) return;
+
+    const newTier = {
+        id: `tier-${Date.now()}`,
+        title: 'New',
+        color: '#ffffff', // 白
+        textColor: '#000000', // 黒
+        items: []
+    };
+
+    // 挿入位置の決定
+    const insertIndex = position === 'above' ? currentSettingTierIndex : currentSettingTierIndex + 1;
+
+    // 指定位置に挿入
+    tiers.splice(insertIndex, 0, newTier);
+    closeSettings();
+    renderBoard();
+}
+
+// Tierの削除
+function deleteTier() {
+    if (currentSettingTierIndex === null) return;
+
+    // 削除するTierのアイテムをプールに戻す
+    const deletedItems = tiers[currentSettingTierIndex].items;
+    tokenPool = tokenPool.concat(deletedItems);
+
+    tiers.splice(currentSettingTierIndex, 1);
+    closeSettings();
     renderBoard();
     renderPool();
 }
@@ -29,13 +138,25 @@ function renderBoard() {
         const row = document.createElement('div');
         row.className = 'tier-row';
         row.dataset.tierIndex = tierIndex;
-        row.style.borderLeft = `8px solid ${tier.color}`;
+
 
         const label = document.createElement('div');
         label.className = 'tier-label';
         label.textContent = tier.title;
         label.style.backgroundColor = tier.color;
         label.style.color = tier.textColor;
+        label.contentEditable = 'true';
+
+        label.addEventListener('blur', () => {
+            tier.title = label.textContent;
+        });
+
+        label.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                label.blur();
+            }
+        });
 
         const itemsContainer = document.createElement('div');
         itemsContainer.className = 'tier-items';
@@ -66,8 +187,19 @@ function renderBoard() {
             handleDropToTier(tierIndex, null);
         });
 
+        // 設定ボタン（歯車）の追加
+        const settingsBtn = document.createElement('button');
+        settingsBtn.className = 'tier-settings-btn';
+        settingsBtn.innerHTML = `
+            <svg>
+                <use href="#icon-settings"></use>
+            </svg>
+        `;
+        settingsBtn.addEventListener('click', () => openSettings(tierIndex));
+
         row.appendChild(label);
         row.appendChild(itemsContainer);
+        row.appendChild(settingsBtn);
         container.appendChild(row);
     });
 }
@@ -81,7 +213,7 @@ function renderPool() {
     if (tokenPool.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'empty-tier';
-        empty.textContent = '未配置トークンはありません';
+        empty.textContent = '未配置カードはありません';
         pool.appendChild(empty);
         return;
     }
@@ -143,7 +275,103 @@ function createDraggableItem(item, source, tierIndex, itemIndex) {
         handleDropToTier(targetTierIndex, targetIndex);
     });
 
+
+
+    // タッチデバイス対応
+    setupTouchEvents(el, item, source, tierIndex, itemIndex);
+
     return el;
+}
+
+// タッチイベントの設定
+function setupTouchEvents(el, item, source, tierIndex, itemIndex) {
+    el.addEventListener('touchstart', (e) => {
+        // マルチタッチ回避
+        if (e.touches.length > 1) return;
+
+        const touch = e.touches[0];
+
+        // ドラッグ情報のセット
+        dragItem = {
+            id: item.id,
+            source,
+            tierIndex,
+            itemIndex,
+        };
+
+        // ゴースト要素の作成
+        dragGhost = el.cloneNode(true);
+        dragGhost.style.position = 'fixed';
+        dragGhost.style.pointerEvents = 'none'; // 下にある要素を判定できるように
+        dragGhost.style.zIndex = '1000';
+        dragGhost.style.opacity = '0.8';
+        dragGhost.style.width = `${el.offsetWidth}px`;
+        dragGhost.style.left = `${touch.clientX - el.offsetWidth / 2}px`;
+        dragGhost.style.top = `${touch.clientY - el.offsetHeight / 2}px`;
+        dragGhost.style.boxShadow = '0 10px 20px rgba(0,0,0,0.5)';
+
+        document.body.appendChild(dragGhost);
+        el.classList.add('dragging');
+    }, { passive: false });
+
+    el.addEventListener('touchmove', (e) => {
+        if (!dragGhost) return;
+        e.preventDefault(); // スクロール防止
+
+        const touch = e.touches[0];
+        dragGhost.style.left = `${touch.clientX - dragGhost.offsetWidth / 2}px`;
+        dragGhost.style.top = `${touch.clientY - dragGhost.offsetHeight / 2}px`;
+    }, { passive: false });
+
+    el.addEventListener('touchend', (e) => {
+        if (!dragGhost) return;
+
+        const touch = e.changedTouches[0];
+        // ドロップ位置にある要素を取得
+        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        handleTouchDrop(targetEl);
+
+        // クリーンアップ
+        document.body.removeChild(dragGhost);
+        dragGhost = null;
+        el.classList.remove('dragging');
+        dragItem = null;
+    });
+}
+
+// タッチ操作でのドロップ処理
+function handleTouchDrop(targetEl) {
+    if (!targetEl) return;
+
+    // トークンプールへのドロップ判定
+    if (targetEl.closest('.token-pool')) {
+        handleDropToPool();
+        return;
+    }
+
+    // Tier内のアイテムへのドロップ（並び替え）判定
+    const targetItem = targetEl.closest('.tier-item');
+    if (targetItem) {
+        // 自分自身へのドロップは無視
+        if (targetItem.dataset.id === dragItem.id) return;
+
+        const targetTierIndex = parseInt(targetItem.dataset.tierIndex);
+        const targetIndex = parseInt(targetItem.dataset.itemIndex);
+        handleDropToTier(targetTierIndex, targetIndex);
+        return;
+    }
+
+    // Tier行（空きスペース）へのドロップ判定
+    const targetRow = targetEl.closest('.tier-items') || targetEl.closest('.tier-row');
+    if (targetRow) {
+        // .tier-itemsを探す
+        const itemsContainer = targetRow.classList.contains('tier-items') ? targetRow : targetRow.querySelector('.tier-items');
+        if (itemsContainer) {
+            const tierIndex = parseInt(itemsContainer.dataset.tierIndex);
+            handleDropToTier(tierIndex, null); // 末尾に追加
+        }
+    }
 }
 
 // テキストからトークン生成
