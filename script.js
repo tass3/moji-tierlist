@@ -446,4 +446,3 @@ function takeDragItem() {
 }
 
 window.addEventListener('DOMContentLoaded', init);
-
