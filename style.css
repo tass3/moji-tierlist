@@ -120,10 +120,6 @@ header h1 {
     background: #191919;
 }
 
-.tier-row:nth-child(even) {
-    background: #191919;
-}
-
 .tier-label {
     min-width: 90px;
     display: flex;
